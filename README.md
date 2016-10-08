@@ -64,7 +64,7 @@ cd swift-3.0 && tar -xzf ../swift-3.0-2016-09-27-RPi23-ubuntu16.04.tar.gz
 nano ~/.profile
 export PATH=$HOME/swift-3.0/usr/bin:$PATH
 ```
-## For those who want to jump straight in
+## Jumping straight into sample code
 
 To get started quickly, you can take a look at my example project [here](Examples/SwiftLinuxSerialTest). In order to run the example properly, you need to connect one of your (USB/UART) serial ports in a loopback manner. Basically, you short the TX and RX pins of the serial port.
 
