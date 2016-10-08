@@ -1,6 +1,4 @@
 # SwiftLinuxSerial
-(Readme is still work in progress)
-
 A Swift 3 Linux-only library for reading and writing to serial ports. This library has been tested to work on Linux Mint 18 (based on Ubuntu 16.04) and on the [Raspberry Pi 3 on Ubuntu 16.04](https://wiki.ubuntu.com/ARM/RaspberryPi). Other platforms using Ubuntu like the Beaglebone might work as well.
 
 <p>
