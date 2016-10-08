@@ -94,11 +94,73 @@ let package = Package(
     ...
 )
 ```
+
+Make sure to `import SwiftLinuxSerial` in the source files that use my API.
+
 Then run `swift build` to download the dependencies and compile your project. Your executable will be found in the `./.build/debug/` directory.
 
-## API
+## API usage
 
-...
+### Initialise the class
+
+```swift
+let serialHandler : SwiftLinuxSerial = SwiftLinuxSerial(serialPortName : portName)
+```
+Supply the portname that you wish to open like `/dev/ttyUSB0`.
+
+### Opening the Serial Port
+
+```swift
+let status = serialHandler.openPort(receive : true, transmit : true)
+```
+Open the port and supply whether you want receive/transmit only or both. Obviously you should not put `false` for both. Will return a tuple containing `openSuccess` and the file descriptor. You don't have to store the file descriptor as that value is kept within the object.
+
+### Set port settings
+
+```swift
+serialHandler.setPortSettings(receiveBaud : SwiftLinuxSerialBaud.BAUD_B9600, 
+	transmitBaud : SwiftLinuxSerialBaud.BAUD_B9600, 
+	charsToReadBeforeReturn : 1)
+```
+
+The port settings call can be as simple as the above. For the baud rate, just supply both transmit and receive even if you are only intend to use one function. For example, transmitBaud will be ignored if you specified `transmit : false` when opening the port. 
+
+`charsToReadBeforeReturn` determines how many characters Linux must wait to receive before it will return from a [read()](https://linux.die.net/man/2/read) function. If in doubt, just put 1.
+
+This function has been defined with default settings as shown in the function definition.
+
+```swift
+public func setPortSettings(receiveBaud : SwiftLinuxSerialBaud, 
+	transmitBaud : SwiftLinuxSerialBaud, 
+	charsToReadBeforeReturn : UInt8,
+	parity : Bool = false,
+	dataBits : SwiftLinuxSerialDataBit = SwiftLinuxSerialDataBit.DATA_BIT_8,
+	stopBit : SwiftLinuxSerialStopBit = SwiftLinuxSerialStopBit.STOP_BIT_1,
+	hardwareFlowControl : Bool = false,
+	softwareFlowControl : Bool = false,
+	outputProcessing : Bool = false,
+	minimumTimeToWaitBeforeReturn : UInt8 = 0){ //0 means wait indefinitely
+```
+If the default settings do not suit you, just pass in extra parameters to override them.
+
+### Reading data from port
+
+There are several functions you can use to read data. All functions here are blocking till the expected number of bytes has been received.
+
+```swift
+func readStringFromPortBlocking(bytesToReadFor : Int) -> String
+```
+This is the easiest to use if you are sending text data. Just provide how many bytes you expect to read. The result will then be returned as a typical Swift String. This function internally calls `readDataFromPortBlocking()`.
+
+```swift
+func readDataFromPortBlocking(bytesToReadFor : Int) -> (dataRead : Data, bytesRead : Int)
+```
+This function is if you intend to receive binary data. This function internally calls `readBytesFromPortBlocking()`
+
+```swift
+func readBytesFromPortBlocking(buf : UnsafeMutablePointer<UInt8>, size : Int) -> Int
+```
+If you intend to play with unsafe pointers directly, this is the function for you! Note that you are responsible for allocating the pointer before passing into this function then deallocate the pointer once you are done.
 
 
 
