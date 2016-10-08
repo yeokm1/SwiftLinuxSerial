@@ -145,7 +145,7 @@ If the default settings do not suit you, just pass in extra parameters to overri
 
 ### Reading data from port
 
-There are several functions you can use to read data. All functions here are blocking till the expected number of bytes has been received.
+There are several functions you can use to read data. All functions here are blocking till the expected number of bytes has been received or a condition has been met.
 
 ```swift
 func readStringFromPortBlocking(bytesToReadFor : Int) -> String
@@ -155,14 +155,54 @@ This is the easiest to use if you are sending text data. Just provide how many b
 ```swift
 func readDataFromPortBlocking(bytesToReadFor : Int) -> (dataRead : Data, bytesRead : Int)
 ```
-This function is if you intend to receive binary data. This function internally calls `readBytesFromPortBlocking()`
+This function is if you intend to receive binary data. Will return both data and the number of bytes read. This function internally calls `readBytesFromPortBlocking()`
 
 ```swift
 func readBytesFromPortBlocking(buf : UnsafeMutablePointer<UInt8>, size : Int) -> Int
 ```
-If you intend to play with unsafe pointers directly, this is the function for you! Note that you are responsible for allocating the pointer before passing into this function then deallocate the pointer once you are done.
+If you intend to play with unsafe pointers directly, this is the function for you! Will return the number of bytes read. Note that you are responsible for allocating the pointer before passing into this function then deallocate the pointer once you are done.
 
+```swift
+func readLineFromPortBlocking() -> String
+```
+Read byte by byte till the newline character `\n` is encountered. A String containing the result so far will be returned without the newline character. This function internally calls `readTillCharacterBlocking()`.
 
+```swift
+func readTillCharacterBlocking(characterRep : UnicodeScalar) -> String
+```
+Keep reading until the specified ASCII or Unicode value has been encountered. Return the string read so far without that value.
 
+### Writing data to the port
 
+There are several functions you can use to write data. All functions here are blocking till all the data has been written.
+
+```swift
+func writeStringToPortBlocking(stringToWrite : String) -> Int
+```
+Most straightforward function, String in then transmit! Will return how many bytes actually written. Internally calls `writeDataToPortBlocking()`
+
+```swift
+func writeDataToPortBlocking(dataToWrite : Data) -> Int
+```
+Binary data in, then transmit! ill return how many bytes actually written. Internally calls `writeBytesToPortBlocking`.
+
+```swift
+func writeBytesToPortBlocking(buf : UnsafeMutablePointer<UInt8>, size : Int) -> Int
+```
+Function for those that want to mess with unsafe pointers. You have to specify how many bytes have to be written. Will return how many bytes actually written.
+
+### Closing the port
+
+Just do `serialHandler.closePort()` to close the port once you are done using it.
+
+## C example code
+
+I did my initial prototype of this library in the C language. For reference purposes, you can take a look at it [Examples/original-serial-example.c](Examples/original-serial-example.c) .
+
+## External References
+
+This library cannot be written without the amazing reference code I depended on.
+
+1. [Xanthium's Serial Port Programming on Linux](http://xanthium.in/Serial-Port-Programming-on-Linux)
+2. [Chrishey Drick's Reading data from Serial Port](https://chrisheydrick.com/2012/06/17/how-to-read-serial-data-from-an-arduino-in-linux-with-c-part-3/)
 
