@@ -39,6 +39,7 @@ sudo apt-get update
 sudo apt-get install swift-3.0
 
 #This command can be added to your bash profile so Swift will be in your PATH after a reboot
+nano ~/.profile
 export PATH=/opt/swift/swift-3.0/usr/bin:$PATH
 ```
 
@@ -62,10 +63,42 @@ mkdir swift-3.0
 cd swift-3.0 && tar -xzf ../swift-3.0-2016-09-27-RPi23-ubuntu16.04.tar.gz
 
 #This command can be added to your bash profile so Swift will be in your PATH after a reboot
+nano ~/.profile
 export PATH=$HOME/swift-3.0/usr/bin:$PATH
 ```
+## For those who want to jump straight in
 
+To get started quickly, you can take a look at my example project [here](Examples/SwiftLinuxSerialTest). In order to run the example properly, you need to connect one of your (USB/UART) serial ports in a loopback manner. Basically, you short the TX and RX pins of the serial port.
 
+```bash
+git clone https://github.com/yeokm1/SwiftLinuxSerial.git
+cd SwiftLinuxSerial/Examples/SwiftLinuxSerialTest/
+swift build
+#You need root to access the serial port. Replace /dev/ttyUSB0 with the name of your serial port under test
+sudo ./.build/debug/SwiftLinuxSerialTest /dev/ttyUSB0
+
+#If all goes well you should see a series of messages informing you that data transmitted has been received properly.
+```
+
+## Integrating with your project
+
+Add SwiftLinuxSerial as a dependency to your project by editing the `Package.swift` file.
+
+```swift
+let package = Package(
+    name: "NameOfMyProject",
+    dependencies: [
+        .Package(url: "https://github.com/yeokm1/SwiftLinuxSerial.git", majorVersion: 0),
+        ...
+    ]
+    ...
+)
+```
+Then run `swift build` to download the dependencies and compile your project. Your executable will be found in the `./.build/debug/` directory.
+
+## API
+
+...
 
 
 
