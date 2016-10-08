@@ -44,7 +44,7 @@ export PATH=/opt/swift/swift-3.0/usr/bin:$PATH
 ```
 
 ### Install Swift 3 on Ubuntu on Raspberry Pi 3
-Instructions from thes section is referenced from this [link](http://dev.iachieved.it/iachievedit/swift-3-0-on-raspberry-pi-2-and-3/)
+Instructions from this section is referenced from this [link](http://dev.iachieved.it/iachievedit/swift-3-0-on-raspberry-pi-2-and-3/).
 
 Since Swift 3 is still rapidly evolving, we should not use the Swift packages provided via the apt package manager if they exist and instead use prebuilt binaries instead. We will also not install Swift 3 to the system-level directories to avoid problems in case we have to update the version.
 
