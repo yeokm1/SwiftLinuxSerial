@@ -12,7 +12,7 @@ Before using this library, I assume you already have Ubuntu installed and fully 
 
 ### Network bug on Raspberry Pi 3 Ubuntu after system update
 
-Reference from a [comment of this page link](http://dev.iachieved.it/iachievedit/building-swift-3-0-on-a-raspberry-pi-3/#comment-2072). The `eth0` ethernet adapter has been changed to something like `enxp...`.
+Reference from a [comment of this page link](http://dev.iachieved.it/iachievedit/building-swift-3-0-on-a-raspberry-pi-3/#comment-2072). The `eth0` ethernet adapter will change to something like `enxp...` after the reboot which causes problems for the network configuration files.
 
 ```bash
 #Get new name of network adapter
