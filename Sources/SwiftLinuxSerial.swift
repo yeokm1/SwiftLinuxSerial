@@ -65,6 +65,8 @@ public class SwiftLinuxSerial {
 
 		//O_NOCTTY means that no terminal will control the process opening the serial port.
 		if(receive && transmit){
+
+			//C: open(portName, O_RDONLY | O_NOCTTY);
 			fileDescriptor = open(portName, O_RDWR | O_NOCTTY)
 		} else if(receive){
 			fileDescriptor = open(portName, O_RDONLY | O_NOCTTY)
@@ -95,6 +97,7 @@ public class SwiftLinuxSerial {
 		}
 
 		//Set up the control structure
+		//C: struct termios srSettings;
 		var srSettings : termios = termios()
 
 		//Get options structure for the port
@@ -103,12 +106,15 @@ public class SwiftLinuxSerial {
 		let receiveBaudActual = convertSwiftLinuxSerialBaudRatesEnumToRequired(param : receiveBaud)
 		let transmitBaudActual = convertSwiftLinuxSerialBaudRatesEnumToRequired(param : transmitBaud)
 
+		//C: cfsetispeed(&srSettings, B9600);
 		cfsetispeed(&srSettings, UInt32(receiveBaudActual))
 		cfsetospeed(&srSettings, UInt32(transmitBaudActual))
 
 		if(parity){
+			//C: srSettings.c_cflag |= PARENB;
 			srSettings.c_cflag |= ~UInt32(PARENB)
 		} else {
+			//C: srSettings.c_cflag &= ~PARENB;
 			srSettings.c_cflag &= ~UInt32(PARENB)
 		}
 
@@ -156,10 +162,12 @@ public class SwiftLinuxSerial {
 		//Wait for certain number of characters to come in before returning
 		//VMIN should be position 6 in the tuple. C fixed arrays are imported as tuples in Swift
 		//Use print(VMIN) to confirm the value for your platform
+		//C: srSettings.c_cc[VMIN] = charsToReadBeforeReturn;
 		srSettings.c_cc.6 = charsToReadBeforeReturn
 
 		//VTIME is position 5 in the tuple. C fixed arrays are imported as tuples in Swift
 		//Use print(VTIME) to check the value for your platform
+		//C: srSettings.c_cc[VTIME] = minimumTimeToWaitBeforeReturn;
 		srSettings.c_cc.5 = minimumTimeToWaitBeforeReturn
 
 		//Commit settings
@@ -199,6 +207,52 @@ public class SwiftLinuxSerial {
 			case SwiftLinuxSerialBaud.BAUD_B3500000 : return B3500000
 			case SwiftLinuxSerialBaud.BAUD_B4000000 : return B4000000
 	 	}
+	}
+
+	//C: readBytesFromPortBlocking(char * buf, int size)
+	public func readBytesFromPortBlocking(buf : UnsafeMutablePointer<UInt8>, size : Int) -> Int {
+		if(fileDescriptor == SERIAL_OPEN_FAIL){
+			return 0
+		}
+
+		let bytesRead : Int = read(fileDescriptor, buf, size)
+		return bytesRead
+	}
+
+	public func writeBytesToPortBlocking(buf : UnsafeMutablePointer<UInt8>, size : Int) -> Int {
+		if(fileDescriptor == SERIAL_OPEN_FAIL){
+			return 0
+		}
+
+		let bytesWritten : Int = write(fileDescriptor, buf, size)
+		return bytesWritten
+	}
+
+	public func readDataFromPortBlocking(bytesToReadFor : Int) -> (dataRead : Data, bytesRead : Int) {
+		
+		//C: char * tempBuffer = (char*) malloc(sizeof(char) * bytesToReadFor); 
+		let tempBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity : bytesToReadFor)
+
+		//C: free(tempBuffer)
+		defer { tempBuffer.deallocate(capacity : bytesToReadFor) }
+
+		let bytesRead : Int = readBytesFromPortBlocking(buf : tempBuffer, size : bytesToReadFor)
+		let data = Data(bytes: tempBuffer, count: bytesRead)
+
+		return (dataRead : data, bytesRead : bytesRead)
+	}
+
+	public func writeDataToPortBlocking(dataToWrite : Data) -> Int {
+
+		let sizeToWrite = dataToWrite.count
+
+		let tempBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity : sizeToWrite)
+		defer { tempBuffer.deallocate(capacity : sizeToWrite) }
+
+		dataToWrite.copyBytes(to : tempBuffer, count : sizeToWrite)
+
+		let bytesWritten : Int = writeBytesToPortBlocking(buf : tempBuffer, size : sizeToWrite)
+		return bytesWritten
 	}
 
 
@@ -245,50 +299,6 @@ public class SwiftLinuxSerial {
 		return stringReadSoFar
 
 	}
-
-	public func readDataFromPortBlocking(bytesToReadFor : Int) -> (dataRead : Data, bytesRead : Int) {
-		let tempBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity : bytesToReadFor)
-		defer { tempBuffer.deallocate(capacity : bytesToReadFor) }
-
-		let bytesRead : Int = readBytesFromPortBlocking(buf : tempBuffer, size : bytesToReadFor)
-		let data = Data(bytes: tempBuffer, count: bytesRead)
-
-		return (dataRead : data, bytesRead : bytesRead)
-	}
-
-	public func writeDataToPortBlocking(dataToWrite : Data) -> Int {
-
-		let sizeToWrite = dataToWrite.count
-
-		let tempBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity : sizeToWrite)
-		defer { tempBuffer.deallocate(capacity : sizeToWrite) }
-
-		dataToWrite.copyBytes(to : tempBuffer, count : sizeToWrite)
-
-		let bytesWritten : Int = writeBytesToPortBlocking(buf : tempBuffer, size : sizeToWrite)
-		return bytesWritten
-	}
-
-
-
-	public func readBytesFromPortBlocking(buf : UnsafeMutablePointer<UInt8>, size : Int) -> Int {
-		if(fileDescriptor == SERIAL_OPEN_FAIL){
-			return 0
-		}
-
-		let bytesRead : Int = read(fileDescriptor, buf, size)
-		return bytesRead
-	}
-
-	public func writeBytesToPortBlocking(buf : UnsafeMutablePointer<UInt8>, size : Int) -> Int {
-		if(fileDescriptor == SERIAL_OPEN_FAIL){
-			return 0
-		}
-
-		let bytesWritten : Int = write(fileDescriptor, buf, size)
-		return bytesWritten
-	}
-
 
 	public func closePort(){
 		if(fileDescriptor != SERIAL_OPEN_FAIL){
