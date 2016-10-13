@@ -10,19 +10,6 @@ A Swift 3 Linux-only library for reading and writing to serial ports. This libra
 
 Before using this library, I assume you already have Ubuntu installed and fully updated on your system or single-board computer. To get Ubuntu installed on the Raspberry Pi, use this [link](https://wiki.ubuntu.com/ARM/RaspberryPi). 
 
-### Network bug on Raspberry Pi 3 Ubuntu after system update (as of Oct 2016)
-
-Reference from a [comment of this page link](http://dev.iachieved.it/iachievedit/building-swift-3-0-on-a-raspberry-pi-3/#comment-2072). The `eth0` ethernet adapter will change to something like `enxp...` after the reboot which causes problems for the network configuration files.
-
-```bash
-#Get new name of network adapter
-ifconfig -a
-#enxp....
-sudo nano /etc/network/interfaces.d/50-cloud-init.cfg
-#Replace eth 0 with the name of your new adapter enxp...
-sudo reboot
-```
-
 ### Install Swift 3 on Ubuntu on x86-based machines
 
 Reference instructions obtained from [here](http://dev.iachieved.it/iachievedit/swift-3-0-for-ubuntu-16-04-xenial-xerus/). We will use a Swift binary produced by iachievedit.
