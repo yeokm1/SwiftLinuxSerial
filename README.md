@@ -43,9 +43,9 @@ sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-3.6
 
 cd ~
 #Replace the link below with the latest version
-wget http://swift-arm.ddns.net/job/Swift-3.0-Pi3-ARM-Incremental/lastSuccessfulBuild/artifact/swift-3.0-2016-09-27-RPi23-ubuntu16.04.tar.gz
+wget http://swift-arm.ddns.net/job/Swift-3.0-Pi3-ARM-Incremental/lastSuccessfulBuild/artifact/swift-3.0-2016-10-13-RPi23-ubuntu16.04.tar.gz	
 mkdir swift-3.0
-cd swift-3.0 && tar -xzf ../swift-3.0-2016-09-27-RPi23-ubuntu16.04.tar.gz
+cd swift-3.0 && tar -xzf ../swift-3.0-2016-10-13-RPi23-ubuntu16.04.tar.gz	
 
 #This command can be added to your bash profile so Swift will be in your PATH after a reboot
 nano ~/.profile
