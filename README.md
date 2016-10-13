@@ -23,8 +23,8 @@ echo "deb http://iachievedit-repos.s3.amazonaws.com/ xenial main" | sudo tee --a
 sudo apt-get update
 sudo apt-get install swift-3.0
 
-#This command can be added to your bash profile so Swift will be in your PATH after a reboot
 nano ~/.profile
+#This command can be added to your bash profile so Swift will be in your PATH after a reboot
 export PATH=/opt/swift/swift-3.0/usr/bin:$PATH
 ```
 
