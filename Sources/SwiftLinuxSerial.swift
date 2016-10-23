@@ -231,8 +231,8 @@ public class SerialPort {
         }
     }
 
-    public func setSettings(readRate: BaudRate,
-                            writeRate: BaudRate,
+    public func setSettings(receiveRate: BaudRate,
+                            transmitRate: BaudRate,
                             minimumBytesToRead: Int,
                             timeout: Int = 0, /* 0 means wait indefinitely */
                             enableParity: Bool = false,
@@ -252,8 +252,8 @@ public class SerialPort {
         tcgetattr(fileDescriptor, &settings)
 
         // Set baud rates
-        cfsetispeed(&settings, readRate.speedValue)
-        cfsetospeed(&settings, writeRate.speedValue)
+        cfsetispeed(&settings, receiveRate.speedValue)
+        cfsetospeed(&settings, transmitRate.speedValue)
 
         // Set parity enable flag
         if enableParity {
